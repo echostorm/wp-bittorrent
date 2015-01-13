@@ -12,6 +12,6 @@ if (!defined('WP_UNINSTALL_PLUGIN')) { exit(); }
 delete_option('wp_bittorrent_settings');
 
 // Delete caches.
-$cache_dir = content_url() . '/wp_bittorrent_seeds';
+$cache_dir = WP_CONTENT_DIR . '/wp_bittorrent_seeds';
 array_map('unlink', glob("$cache_dir/*"));
 rmdir($cache_dir);
