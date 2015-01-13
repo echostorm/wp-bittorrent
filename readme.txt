@@ -14,6 +14,14 @@ Publish your blog as a BitTorrent seed. Automatically make and share torrents fo
 
 Bring the power of BitTorrent to your blog in just a few clicks. BitTorrent My Blog automatically creates `.torrent` files for every part of your website, enabling your visitors to download and share copies of your content over the BitTorrent peer-to-peer file sharing network. Your web site itself serves as the web seed for each new torrent.
 
+To turn your web page into a torrent download, simply add a `wp_bittorrent_seed` parameter to the URL. So, for instance, if your blog has a page at the address `http://example.com/about/`, then the torrent download for this page is:
+
+    http://example.com/about/?wp_bittorrent_seed
+
+If you do not use pretty permalinks, then you might have a similar page at an address like `http://example.com/?p=123`, in which case your torrent download for that page is located at:
+
+    http://example.com/?p=123&wp_bittorrent_seed
+
 Why might you want to publish your site on BitTorrent?
 
 * If you have a particularly popular post, replacing it with a web seed to share over BitTorrent can **dramatically reduce the load on your server.**
