@@ -22,6 +22,8 @@ If you do not use pretty permalinks, then you might have a similar page at an ad
 
     http://example.com/?p=123&wp_bittorrent_seed
 
+See the [plugin FAQ](https://wordpress.org/plugins/bittorrent/faq/) for more details on theming.
+
 Why might you want to publish your site on BitTorrent?
 
 * If you have a particularly popular post, replacing it with a web seed to share over BitTorrent can **dramatically reduce the load on your server.**
@@ -48,6 +50,12 @@ Want to try *before* you install? [Download the previous link as a torrent](http
 For all features of this plugin to work, you must be using PHP 5.3, with the [fileinfo extension](https://php.net/manual/en/book.fileinfo.php). (This is available by default on most PHP 5.3 and greater systems.)
 
 == Frequently Asked Questions ==
+
+= How do I add torrent links to my pages? =
+
+Every page on your site has an associated torrent URL that is the same as the regular URL but with `?wp_bittorrent_seed` or `&wp_bittorrent_seed` added to the end, depending on whether you use [WordPress's Pretty Permalinks](https://codex.wordpress.org/Using_Permalinks) feature or not, respectively. In your themes, you can programmatically output the torrent link to the current page like this:
+
+    <a href="<?php print add_query_arg('wp_bittorrent_seed', true, get_permalink());?>">seed this using BitTorrent</a>
 
 = The plugin says "mkdir() permission denied"? =
 Make sure your WordPress content directory (`wp-content/`) is read and writeable by your webserver. (This is the default on most systems.)
