@@ -3,7 +3,7 @@
  * Plugin Name: BitTorrent my Blog
  * Plugin URI: https://github.com/meitar/wp-bittorrent
  * Description: Publish your blog as a BitTorrent seed. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=WP-BitTorrent&amp;item_number=WP-BitTorrent&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of WP-BitTorrent">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.1
+ * Version: 0.1.1
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: wp-bittorrent
@@ -20,8 +20,7 @@ class WP_BitTorrent {
         'max_cache_age' => 86400 // 24 hours, in seconds
     );
     private $seed_cache_dir; //< Directory to store temporary web seeds of blog content.
-    private $current_url;    //< The URL of the current request.
-    private $cache;          //< Filename of the web seed cache file.
+    private $seed_dir;       //< Filesystem path of the web seed cache file (or directory).
     private $max_cache_age;  //< Seconds until filesystem cache is considered expired.
 
     public function __construct () {
@@ -53,15 +52,13 @@ class WP_BitTorrent {
         // TODO: Make this work with pretty permalinks?
         //       Perhaps see https://codex.wordpress.org/Custom_Queries
         if (!isset($_GET[$this->prefix . 'seed'])) { return; }
-
         global $wp;
-        $this->current_url = add_query_arg($wp->query_string, '', home_url($wp->request));
-
-        $this->cache = $this->seed_cache_dir . '/web-seed-'
-            . hash('sha512', get_current_user_id() . urlencode($this->current_url))
-            . '.html';
-        if (is_readable($this->cache) && $this->max_cache_age > time() - filemtime($this->cache)) {
-            $this->sendTorrent($this->cache);
+        $current_url = add_query_arg($wp->query_string, '', home_url($wp->request));
+        $this->seed_dir = $this->seed_cache_dir . '/web-seed-'
+            . hash('sha256', get_current_user_id() . $current_url);
+        if (is_readable($this->seed_dir) && $this->max_cache_age > time() - filemtime("$this->seed_dir/.")) {
+            $torrent = $this->makeTorrent($this->seed_dir);
+            $torrent->send();
         } else {
             // We need a new cache file, so regenerate it. This means
             // we let WordPress do its thing, but we substitute our
@@ -82,10 +79,10 @@ class WP_BitTorrent {
      * The modified output is stored in the plugin's $buffer member variable.
      *
      * @see endBuffer
-     * @return string $buffer The current PHP output buffer.
+     * @param string $buffer The current PHP output buffer.
      * @return string Always returns an empty string, the buffer is hijacked.
      */
-    public function hijackOutput ($buffer) {
+    private function hijackOutput ($buffer) {
         $this->buffer = $buffer;
         // TODO: Fetch images and insert them as data URIs inline?
         $options = get_option($this->prefix . 'settings');
@@ -148,23 +145,55 @@ class WP_BitTorrent {
             $this->debugLog(sprintf(esc_html__('Cleaning output buffer %s', 'wp-bittorrent'), $i));
             ob_end_clean();
         }
-        if (false !== ($s = file_put_contents($this->cache, $this->buffer))) {
-            $this->sendTorrent($this->cache);
+        if (file_exists($this->seed_dir)) {
+            self::rmtree($this->seed_dir);
+        }
+        // TODO: Fix the name so it works for pages that are not single (like tag, archives, etc), too.
+        // TODO: Am I right that there's a double-urlencode()'ing problem here?
+        $this->torrent_name = strtr(get_the_title(), ' :/\\', '----'); // Lazy encoding
+        if (mkdir($this->seed_dir) && mkdir("{$this->seed_dir}/{$this->torrent_name}")) {
+            if (false !== ($s = file_put_contents("{$this->seed_dir}/{$this->torrent_name}/index.html", $this->buffer))) {
+                $torrent = $this->makeTorrent($this->seed_dir);
+                $torrent->send();
+            }
         }
     }
 
-    public function sendTorrent ($file) {
-        $file_url = content_url() . '/' . basename($this->seed_cache_dir) . '/' . basename($file);
-        $p = parse_url($this->current_url);
+    /**
+     * Recursively deletes directories, and removes the directories.
+     * Also used in the uninstaller.
+     */
+    public static function rmtree ($dir) {
+        $files = array_diff(scandir($dir), array('.', '..'));
+        foreach ($files as $file) {
+            (is_dir("$dir/$file")) ? self::rmtree("$dir/$file") : unlink("$dir/$file");
+        }
+        return rmdir($dir);
+    }
 
-        $torrent = new Torrent($file);
-        $torrent->announce($this->getTrackers());
+    /**
+     * Generates a torrent file out of a filesystem path.
+     *
+     * @param string $path Path to a file (or a folder) from which to create a torrent.
+     * @return object The Torrent object.
+     */
+    private function makeTorrent ($path) {
+        $url = content_url() . '/'
+            . basename($this->seed_cache_dir) . '/' . basename($path) . '/';
+
+        $tr = $this->getTrackers();
+        $torrent = new Torrent($path, $tr[0]);
+        $torrent->announce($tr);
         // TODO: Option to make the torrent folder structure mimic
         //       the website paths...?
-        $torrent->name(basename($p['path']) . '.html');
-        $torrent->httpseeds($file_url);
-        $torrent->url_list(array($file_url));
-        $torrent->send(); // also exits
+        $torrent->name($this->torrent_name);
+        $torrent->httpseeds($url . $this->torrent_name . '/');
+        $torrent->url_list(array($url, $url . $this->torrent_name . '/'));
+        $this->debugLog(sprintf(
+            esc_html__('Made torrent object with data: %s', 'wp-bittorrent'),
+            $torrent
+        ));
+        return $torrent;
     }
 
     public function registerSettings () {

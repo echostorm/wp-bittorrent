@@ -13,5 +13,5 @@ delete_option('wp_bittorrent_settings');
 
 // Delete caches.
 $cache_dir = WP_CONTENT_DIR . '/wp_bittorrent_seeds';
-array_map('unlink', glob("$cache_dir/*"));
-rmdir($cache_dir);
+require_once dirname(__FILE__) . '/wp-bittorrent.php';
+WP_BitTorrent::rmtree($cache_dir);

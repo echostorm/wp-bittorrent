@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: BitTorrent, torrent, file sharing, p2p
 Requires at least: 3.5
 Tested up to: 4.1
-Stable tag: 0.1
+Stable tag: 0.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -28,7 +28,7 @@ Why might you want to publish your site on BitTorrent?
 
 * If you have a particularly popular post, replacing it with a web seed to share over BitTorrent can **dramatically reduce the load on your server.**
 * If you regularly host controversial content likely to be censored or threatened with a copyright takedown notice, publishing a web seed and encouraging your visitors to re-share it over BitTorrent can be **the difference between being silenced and being heard.**
-* Today's centralized architectures are a thing of the past. New Web browsers, like [Project Maelstrom](http://www.pcworld.com/article/2859113/project-maelstrom-detailed-more-info-about-bittorrents-vision-for-a-peer-to-peer-web.html), that use BitTorrent by default are already being experiemented with. **Stay on the cutting edge.**
+* Today's centralized architectures are a thing of the past. New Web browsers, like [Project Maelstrom](https://torrentfreak.com/bittorrent-inc-works-p2p-powered-browser-141210/), that use BitTorrent by default are already being experiemented with. **Stay on the cutting edge.**
 
 You don't need to know anything about BitTorrent to use this plugin. Use the zero-configuration out of the box options or customize the generated torrents on the plugin options screen. (The default tracker addresses `udp://tracker.publicbt.com:80` and `udp://open.demonii.com:1337/announce` are used for all generated torrents unless you set your own.)
 
@@ -65,6 +65,10 @@ Make sure your WordPress content directory (`wp-content/`) is read and writeable
 1. The plugin's options screen lets you customize the way your blog is published on BitTorrent. You can leave the default tracker addresses, or set your own. To further improve performance, generated torrent seeds are cached, and you can configure how long the seeds are cached for before they are regenerated.
 
 == Change log ==
+
+= Version 0.1.1 =
+
+* Usability: Torrents are downloaded as a folder with an `index.html` file inside. This provides more human-readable filesystem names and integrates with Project Maelstrom more efficiently.
 
 = Version 0.1 =
 
