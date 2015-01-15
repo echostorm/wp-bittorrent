@@ -269,10 +269,14 @@ class WP_BitTorrent {
                 if (false === file_put_contents($sigfile, $options['sigfile'])) {
                     $this->debugLog(sprintf(esc_html__('Error creating the sigfile %s', 'wp-bittorrent'), $sigfile));
                 }
+                $webseed = trailingslashit(dirname($seed)); // because $seed becomes torrent root
                 $seed = $x;
             }
             $torrent = new Torrent($seed, $tr[0]);
             $torrent->announce($tr);
+            if ($webseed) {
+                $torrent->url_list($webseed);
+            }
             $torrent->save($file);
         }
         $torrent = new Torrent($file);
