@@ -41,6 +41,7 @@ class WP_BitTorrent {
         }
 
         add_action('plugins_loaded', array($this, 'registerL10n'));
+        add_action('init', array($this, 'registerFeed'));
         add_action('admin_init', array($this, 'registerSettings'));
         add_action('admin_menu', array($this, 'registerAdminMenu'));
         add_action('template_redirect', array($this, 'process'));
@@ -51,10 +52,16 @@ class WP_BitTorrent {
         add_action($this->prefix . 'magnet_pointer', $this->prefix . 'magnet_pointer');
 
         add_shortcode($this->prefix . 'tag', array($this, 'callActionFromShortcode'));
+
+
     }
 
     public function registerL10n () {
         load_plugin_textdomain('wp-bittorrent', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+    }
+
+    public function registerFeed () {
+        add_feed('torrent', array($this, 'dispatchTorrentFeed'));
     }
 
     public function getSeedCacheDir () {
@@ -333,6 +340,15 @@ esc_html__('BitTorrent my Blog is provided as free software, but sadly grocery s
 );?></p>
 </div>
 <?php
+    }
+
+    public function dispatchTorrentFeed () {
+        $themed = locate_template('rss-torrent.php');
+        if (!empty($themed)) {
+            load_template($themed);
+        } else {
+            load_template(dirname(__FILE__) . '/templates/rss-torrent.php');
+        }
     }
 
     /**
