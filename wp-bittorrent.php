@@ -221,6 +221,18 @@ class WP_BitTorrent {
         $file = trailingslashit($this->getSeedCacheDir()) . basename($seed) . '.torrent';
         if ($this->isExpired($file)) {
             $tr = $this->getTrackers();
+            // Is the seed a directory or a file?
+            $x = realpath(str_replace(site_url(), ABSPATH, $seed));
+            if (is_dir($x)) {
+                // Workaround for Torrent library bug
+                // @see https://github.com/adriengibrat/torrent-rw/issues/22
+                $sigfile = trailingslashit($x) . 'README-wp-bittorrent.txt';
+                $options = get_option($this->prefix . 'settings');
+                if (false === file_put_contents($sigfile, $options['sigfile'])) {
+                    $this->debugLog(sprintf(esc_html__('Error creating the sigfile %s', 'wp-bittorrent'), $sigfile));
+                }
+                $seed = $x;
+            }
             $torrent = new Torrent($seed, $tr[0]);
             $torrent->announce($tr);
             $torrent->save($file);
@@ -296,6 +308,10 @@ esc_html__('BitTorrent my Blog is provided as free software, but sadly grocery s
                     }
                     $safe_input[$k] = implode("\n", array_map('sanitize_text_field', explode("\n", $v)));
                 break;
+                case 'sigfile':
+                    // This becomes an inert file, no need for strict checking.
+                    $safe_input[$k] = trim($v);
+                    break;
                 case 'max_cache_age':
                 case 'use_data_uri':
                 case 'debug':
@@ -366,6 +382,21 @@ esc_html__('BitTorrent my Blog is provided as free software, but sadly grocery s
                 <label for="<?php esc_attr_e($this->prefix);?>use_data_uri">
                     <span class="description"><?php esc_html_e('When enabled, page assets like images, style sheets, and JavaScripts are embedded directly into the web seed (using the data URI scheme). This can cause web seeds to be bigger and slower to generate, but can result in a better torrent download and less load on your server, especially for popular content.', 'wp-bittorrent');?> <a href="https://php.net/manual/book.fileinfo.php" target="_blank"><?php esc_html_e('Requires PHP Fileinfo extension.', 'wp-bittorrent');?></a></span>
                 </label>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <label for="<?php esc_attr_e($this->prefix);?>sigfile"><?php esc_html_e('Distribution signature', 'wp-bittorrent');?></label>
+            </th>
+            <td>
+                <textarea
+                    id="<?php esc_attr_e($this->prefix);?>sigfile"
+                    name="<?php esc_attr_e($this->prefix);?>settings[sigfile]"
+                    style="width: 85%; min-height: 7em;"
+                    placeholder="<?php esc_attr_e('Type your signature here.', 'wp-bittorrent');?>"><?php if (isset($options['sigfile'])) { print esc_textarea($options['sigfile']); }?></textarea>
+                <p class="description">
+                    <?php esc_html_e('Include a distribution note to be included along with your multi-file torrents. This is a good place to say thanks to folks who download your content, and to remind them to please seed for as long as they can.', 'wp-bittorrent');?>
+                </p>
             </td>
         </tr>
         <tr>
