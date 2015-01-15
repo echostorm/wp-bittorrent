@@ -281,7 +281,7 @@ class WP_BitTorrent {
             }
             $torrent = new Torrent($seed, $tr[0]);
             $torrent->announce($tr);
-            if ($webseed) {
+            if (!empty($webseed)) {
                 $torrent->url_list($webseed);
             }
             $torrent->save($file);
