@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: BitTorrent, torrent, file sharing, p2p
 Requires at least: 3.5
 Tested up to: 4.1
-Stable tag: 0.1.1
+Stable tag: 0.1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -24,7 +24,21 @@ If you do not use pretty permalinks, then you might have a similar page at an ad
 
 See the [plugin FAQ](https://wordpress.org/plugins/bittorrent/faq/) for more details on theming.
 
-Why might you want to publish your site on BitTorrent?
+You can also create torrents out of any files or folders you have on your website with simple shortcodes. (Matching template tags are also available for theme designers.) For example, you have a big file called `my-awesome-video.avi` that you'd like to distribute as a torrent. When you upload it to your site, it's available at `http://example.com/uploads/2015/01/my-awesome-video.avi` so you can make a torrent out of it and get a URL pointing to the torrent with a shortcode that looks like this:
+
+    [wp_bittorrent_tag metainfo_file="http://example.com/uploads/2015/01/my-awesome-video.avi"]Download my video as a torrent![/wp_bittorrent_tag]
+
+This will create an HTML link like this:
+
+    <a href="http://example.com/wp-content/wp-bittorrent-seeds/my-awesome-video.torrent">Download my video as a torrent!</a>
+
+The matching template tag is `<?php do_action('wp_bittorrent_metainfo_file', $url_to_torrent_seed);?>` where `$url_to_torrent_seed` is a URL to the file you want to make into a torrent. For the above example, the complete template code would be:
+
+    <a href="<?php do_action('wp_bittorrent_metainfo_file', content_url('uploads/2015/01/my-awesome-video.avi'));?>">Download my video as a torrent!</a>
+
+See the [Other Notes](https://wordpress.org/plugins/bittorrent/other_notes/) tab for additional shortcodes and template tag information.
+
+= Why might you want to publish your site on BitTorrent? =
 
 * If you have a particularly popular post, replacing it with a web seed to share over BitTorrent can **dramatically reduce the load on your server.**
 * If you regularly host controversial content likely to be censored or threatened with a copyright takedown notice, publishing a web seed and encouraging your visitors to re-share it over BitTorrent can be **the difference between being silenced and being heard.**
@@ -51,8 +65,14 @@ For all features of this plugin to work, you must be using PHP 5.3, with the [fi
 
 == Frequently Asked Questions ==
 
-= How do I add torrent links to my pages? =
+= What can I turn into a torrent? =
+You can turn anything you host on your website into a torrent. Simply upload a file or folder to your website (using either the built-in WordPress media uploader or your favorite file transfer application), and then point to it from any post or page on your website with the `[wp_bittorrent_tag metainfo_file=""]` shortcode.
 
+For example, if you uploaded `my-awesome-video.avi` to your website, and you would ordinarily link to it with a URL like `http://example.com/uploads/2015/01/my-awesome-video.avi`, then you can use the following shortcode to link to its torrent:
+
+    [wp_bittorrent_file metainfo_file="http://example.com/uploads/2015/01/my-awesome-video.avi"]
+
+= How do I add torrent links to my pages? =
 Every page on your site has an associated torrent URL that is the same as the regular URL but with `?wp_bittorrent_seed` or `&wp_bittorrent_seed` added to the end, depending on whether you use [WordPress's Pretty Permalinks](https://codex.wordpress.org/Using_Permalinks) feature or not, respectively. In your themes, you can programmatically output the torrent link to the current page like this:
 
     <a href="<?php print add_query_arg('wp_bittorrent_seed', true, get_permalink());?>">seed this using BitTorrent</a>
@@ -66,6 +86,11 @@ Make sure your WordPress content directory (`wp-content/`) is read and writeable
 
 == Change log ==
 
+= Version 0.1.2 =
+
+* Feature: Three new shortcodes and matching template tags let you easily turn any file or folder on your website into a torrent download.
+* Feature: Option to customize your distribution signature for multi-file torrents.
+
 = Version 0.1.1 =
 
 * Usability: Torrents are downloaded as a folder with an `index.html` file inside. This provides more human-readable filesystem names and integrates with Project Maelstrom more efficiently.
@@ -78,3 +103,24 @@ Make sure your WordPress content directory (`wp-content/`) is read and writeable
 
 If you like this plugin, **please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=WP-BitTorrent&item_number=WP-BitTorrent&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 ) for your use of the plugin**, [purchasing one of Meitar's web development books](http://www.amazon.com/gp/redirect.html?ie=UTF8&location=http%3A%2F%2Fwww.amazon.com%2Fs%3Fie%3DUTF8%26redirect%3Dtrue%26sort%3Drelevancerank%26search-type%3Dss%26index%3Dbooks%26ref%3Dntt%255Fathr%255Fdp%255Fsr%255F2%26field-author%3DMeitar%2520Moscovitz&tag=maymaydotnet-20&linkCode=ur2&camp=1789&creative=390957) or, better yet, contributing directly to [Meitar's Cyberbusking fund](http://Cyberbusking.org/). (Publishing royalties ain't exactly the lucrative income it used to be, y'know?) Your support is appreciated!
+
+= Template tags and shortcodes =
+
+* `wp_bittorrent_metainfo_file` - Creates a `.torrent` metainfo file and returns the URL to it. Parameters:
+    * `$seed` (string) The seed for the torrent. Can be a URL, a local file, or a local folder.
+    * `$return` (bool) Whether to return the URL to the torrent or to print it. (Default: `false`, prints it.)
+    * Example: `<?php do_action('wp_bittorrent_metainfo_file', content_url('uploads/my-awesome-video.avi'));?>`
+* `wp_bittorrent_magnet_uri` - Creates a `.torrent` metainfo file and returns the [magnet URI](https://en.wikipedia.org/wiki/Magnet_URI_scheme) for it. Parameters:
+    * `$seed` (string) The seed for the torrent. Can be a URL, a local file, or a local folder.
+    * `$return` (bool) Whether to return the URL to the torrent or to print it. (Default: `false`, prints it.)
+    * Example: `<?php do_action('wp_bittorrent_magnet_uri', content_url('uploads/my-awesome-video.avi'));?>`
+* `wp_bittorrent_magnet_pointer` - Creates a `.torrent` metainfo file and returns a magnet pointer to it. (Mostly useful for Project Maelstrom, at the moment.) Parameters:
+    * `$seed` (string) The seed for the torrent. Can be a URL, a local file, or a local folder.
+    * `$return` (bool) Whether to return the URL to the torrent or to print it. (Default: `false`, prints it.)
+    * Example: `<?php do_action('wp_bittorrent_magnet_pointer', content_url('uploads/my-awesome-video.avi'));?>`
+
+Each of the above template tags has a matching shortcode:
+
+* `[wp_bittorrent_tag metainfo_file="SEED_URL"]`
+* `[wp_bittorrent_tag magnet_uri="SEED_URL"]`
+* `[wp_bittorrent_tag magnet_pointer="SEED_URL"]`

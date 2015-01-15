@@ -22,10 +22,15 @@ function wp_bittorrent_metainfo_file ($seed, $return = false) {
 /**
  * Prints the magnet URI for a given torrent.
  */
-function wp_bittorrent_magnet_uri ($seed) {
+function wp_bittorrent_magnet_uri ($seed, $return = false) {
     global $wp_bittorrent;
     $torrent = $wp_bittorrent->makeTorrentFromSeed($seed);
-    print $torrent->magnet() . '&as=' . wp_bittorrent_metainfo_file($seed, true);
+    $x = $torrent->magnet() . '&as=' . wp_bittorrent_metainfo_file($seed, true);
+    if ($return) {
+        return $x;
+    } else {
+        print $x;
+    }
 }
 
 /**
@@ -33,8 +38,13 @@ function wp_bittorrent_magnet_uri ($seed) {
  *
  * Project Maelstrom uses these.
  */
-function wp_bittorrent_magnet_pointer ($seed) {
+function wp_bittorrent_magnet_pointer ($seed, $return = false) {
     global $wp_bittorrent;
     $torrent = $wp_bittorrent->makeTorrentFromSeed($seed);
-    print 'magnet:?pt=urn:btih:&as=' . $wp_bittorrent->getSeedCacheUrl(basename($seed) . '.torrent');
+    $x = 'magnet:?pt=urn:btih:&as=' . $wp_bittorrent->getSeedCacheUrl(basename($seed) . '.torrent');
+    if ($return) {
+        return $x;
+    } else {
+        print $x;
+    }
 }

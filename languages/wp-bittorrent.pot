@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the BitTorrent my Blog package.
 msgid ""
 msgstr ""
-"Project-Id-Version: BitTorrent my Blog 0.1.1\n"
+"Project-Id-Version: BitTorrent my Blog 0.1.2\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/wp-bittorrent\n"
-"POT-Creation-Date: 2015-01-14 18:05:04+00:00\n"
+"POT-Creation-Date: 2015-01-15 14:04:51+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,76 +12,88 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: wp-bittorrent.php:36
+#: wp-bittorrent.php:32
+msgid "Cache age set to %s"
+msgstr ""
+
+#: wp-bittorrent.php:38
 msgid ""
 "Failed to create the torrent seed cache directory. Make sure your WordPress "
 "content directory (%s) is writeable by your webserver"
 msgstr ""
 
-#: wp-bittorrent.php:125
+#: wp-bittorrent.php:106
+msgid "Download torrent"
+msgstr ""
+
+#: wp-bittorrent.php:184
 msgid ""
 "Data URI requested for %s but no available MIME type detection method "
 "available."
 msgstr ""
 
-#: wp-bittorrent.php:145
+#: wp-bittorrent.php:204
 msgid "Cleaning output buffer %s"
 msgstr ""
 
-#: wp-bittorrent.php:193
+#: wp-bittorrent.php:252
 msgid "Made torrent object with data: %s"
 msgstr ""
 
-#: wp-bittorrent.php:209 wp-bittorrent.php:277
+#: wp-bittorrent.php:270
+msgid "Error creating the sigfile %s"
+msgstr ""
+
+#: wp-bittorrent.php:301 wp-bittorrent.php:373
 msgid "BitTorrent my Blog Settings"
 msgstr ""
 
-#. #-#-#-#-#  wp-bittorrent.pot (BitTorrent my Blog 0.1.1)  #-#-#-#-#
+#. #-#-#-#-#  wp-bittorrent.pot (BitTorrent my Blog 0.1.2)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
-#: wp-bittorrent.php:210
+#: wp-bittorrent.php:302
 msgid "BitTorrent my Blog"
 msgstr ""
 
-#: wp-bittorrent.php:234
+#: wp-bittorrent.php:326
 msgid ""
 "BitTorrent my Blog is provided as free software, but sadly grocery stores do "
 "not offer free food. If you like this plugin, please consider %1$s to its "
 "%2$s. &hearts; Thank you!"
 msgstr ""
 
-#: wp-bittorrent.php:235
+#: wp-bittorrent.php:327
 msgid "making a donation"
 msgstr ""
 
-#: wp-bittorrent.php:236
+#: wp-bittorrent.php:328
 msgid "houseless, jobless, nomadic developer"
 msgstr ""
 
-#: wp-bittorrent.php:252
+#: wp-bittorrent.php:344
 msgid "Trackers cannot be empty."
 msgstr ""
 
-#: wp-bittorrent.php:273
+#: wp-bittorrent.php:369
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: wp-bittorrent.php:280
+#: wp-bittorrent.php:376
 msgid "BitTorrent defaults"
 msgstr ""
 
-#: wp-bittorrent.php:281
+#: wp-bittorrent.php:377
 msgid "Default BitTorrent publication options."
 msgstr ""
 
-#: wp-bittorrent.php:285
+#: wp-bittorrent.php:381
 msgid "Trackers"
 msgstr ""
 
-#: wp-bittorrent.php:292
+#: wp-bittorrent.php:388
 msgid "Type default tracker addresses here, one per line"
 msgstr ""
 
-#: wp-bittorrent.php:294
+#: wp-bittorrent.php:390
 msgid ""
 "Paste tracker addresses, one per line. Trackers help BitTorrent users find "
 "published torrents. You need to choose at least one tracker for your "
@@ -89,37 +101,37 @@ msgid ""
 "themselves to, the easier it will be for others to find them."
 msgstr ""
 
-#: wp-bittorrent.php:295
+#: wp-bittorrent.php:391
 msgid "Learn more about trackers."
 msgstr ""
 
-#: wp-bittorrent.php:302
+#: wp-bittorrent.php:398
 msgid "Plugin defaults"
 msgstr ""
 
-#: wp-bittorrent.php:303
+#: wp-bittorrent.php:399
 msgid "Options for setting additional plugin defaults."
 msgstr ""
 
-#: wp-bittorrent.php:307
+#: wp-bittorrent.php:403
 msgid "Maximum cache age"
 msgstr ""
 
-#: wp-bittorrent.php:310
+#: wp-bittorrent.php:406
 msgid "Cache age in seconds"
 msgstr ""
 
-#: wp-bittorrent.php:312
+#: wp-bittorrent.php:408
 msgid ""
 "Expiration time of the web seed cache (in seconds). For instance, 86400 "
 "means 1 day, or 24 hours. 0 means expire immediately."
 msgstr ""
 
-#: wp-bittorrent.php:319
+#: wp-bittorrent.php:415
 msgid "Embed assets in web seeds?"
 msgstr ""
 
-#: wp-bittorrent.php:325
+#: wp-bittorrent.php:421
 msgid ""
 "When enabled, page assets like images, style sheets, and JavaScripts are "
 "embedded directly into the web seed (using the data URI scheme). This can "
@@ -128,15 +140,30 @@ msgid ""
 "content."
 msgstr ""
 
-#: wp-bittorrent.php:325
+#: wp-bittorrent.php:421
 msgid "Requires PHP Fileinfo extension."
 msgstr ""
 
-#: wp-bittorrent.php:332
+#: wp-bittorrent.php:427
+msgid "Distribution signature"
+msgstr ""
+
+#: wp-bittorrent.php:434
+msgid "Type your signature here."
+msgstr ""
+
+#: wp-bittorrent.php:436
+msgid ""
+"Include a distribution note to be included along with your multi-file "
+"torrents. This is a good place to say thanks to folks who download your "
+"content, and to remind them to please seed for as long as they can."
+msgstr ""
+
+#: wp-bittorrent.php:443
 msgid "Enable detailed debugging information?"
 msgstr ""
 
-#: wp-bittorrent.php:339
+#: wp-bittorrent.php:450
 msgid ""
 "Turn this on only if you are experiencing problems using this plugin, or if "
 "you were told to do so by someone helping you fix a problem (or if you "

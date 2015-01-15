@@ -3,7 +3,7 @@
  * Plugin Name: BitTorrent my Blog
  * Plugin URI: https://github.com/meitar/wp-bittorrent
  * Description: Publish your blog as a BitTorrent seed. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=WP-BitTorrent&amp;item_number=WP-BitTorrent&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of WP-BitTorrent">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.1.1
+ * Version: 0.1.2
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: wp-bittorrent
@@ -49,6 +49,8 @@ class WP_BitTorrent {
         add_action($this->prefix . 'metainfo_file', $this->prefix . 'metainfo_file');
         add_action($this->prefix . 'magnet_uri', $this->prefix . 'magnet_uri');
         add_action($this->prefix . 'magnet_pointer', $this->prefix . 'magnet_pointer');
+
+        add_shortcode($this->prefix . 'tag', array($this, 'callActionFromShortcode'));
     }
 
     public function registerL10n () {
@@ -66,7 +68,43 @@ class WP_BitTorrent {
      * return string The URL to the seed cache directory.
      */
     public function getSeedCacheUrl ($path = '') {
-        return esc_url(content_url(trailingslashit(basename($this->getSeedCacheDir()))) . $path);
+        return content_url(trailingslashit(basename($this->getSeedCacheDir()))) . $path;
+    }
+
+    /**
+     * Calls a template tag action
+     */
+    public function callActionFromShortcode ($atts, $content = '') {
+        $atts = shortcode_atts(array(
+            'metainfo_file' => false,
+            'magnet_uri' => false,
+            'magnet_pointer' => false,
+            'id' => false,
+            'class' => false,
+            'title' => false,
+            'style' => false,
+
+        ), $atts);
+        $html = '<a';
+        foreach ($atts as $k => $v) {
+            if ($v) {
+                switch ($k) {
+                    case 'metainfo_file':
+                    case 'magnet_uri':
+                    case 'magnet_pointer':
+                        $html .= ' href="';
+                        $func = $this->prefix . $k;
+                        $html .= $func($v, true);
+                        $html .= '"';
+                        break;
+                    default:
+                        $html .= ' ' . esc_attr($k) . '="' . esc_attr($v) . '"';
+                        break;
+                }
+            }
+        }
+        $html .= '>' . ((empty($content)) ? esc_html__('Download torrent', 'wp-bittorrent') : $content) . '</a>';
+        return $html;
     }
 
     public function process () {
