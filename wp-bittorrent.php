@@ -20,16 +20,18 @@ class WP_BitTorrent {
         'max_cache_age' => 86400 // 24 hours, in seconds
     );
     private $seed_cache_dir; //< Directory to store temporary web seeds of blog content.
-    private $seed_dir;       //< Filesystem path of the web seed cache file (or directory).
+    private $seed;           //< Filesystem path of the web seed file (or directory).
     private $max_cache_age;  //< Seconds until filesystem cache is considered expired.
+    private $torrent_name;   //< The name for the generated torrent.
 
     public function __construct () {
         require_once dirname(__FILE__) . '/lib/Torrent-RW/Torrent.php';
 
         $options = get_option($this->prefix . 'settings');
         $this->max_cache_age = (!isset($options['max_cache_age'])) ? $this->default_settings['max_cache_age'] : $options['max_cache_age'];
+        $this->debugLog(sprintf(esc_html__('Cache age set to %s', 'wp-bittorrent'), $this->max_cache_age));
 
-        $this->seed_cache_dir = WP_CONTENT_DIR . '/' . $this->prefix . 'seeds';
+        $this->seed_cache_dir = WP_CONTENT_DIR . '/' . str_replace('_', '-', $this->prefix) . 'seeds';
 
         if (!is_dir($this->seed_cache_dir) && !mkdir($this->seed_cache_dir)) {
             die(sprintf(
@@ -42,10 +44,29 @@ class WP_BitTorrent {
         add_action('admin_init', array($this, 'registerSettings'));
         add_action('admin_menu', array($this, 'registerAdminMenu'));
         add_action('template_redirect', array($this, 'process'));
+
+        // Template tag actions.
+        add_action($this->prefix . 'metainfo_file', $this->prefix . 'metainfo_file');
+        add_action($this->prefix . 'magnet_uri', $this->prefix . 'magnet_uri');
+        add_action($this->prefix . 'magnet_pointer', $this->prefix . 'magnet_pointer');
     }
 
     public function registerL10n () {
         load_plugin_textdomain('wp-bittorrent', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+    }
+
+    public function getSeedCacheDir () {
+        return $this->seed_cache_dir;
+    }
+
+    /**
+     * Returns the URL to the seed cache directory for use in links, etc.
+     *
+     * @param string $path A path to append to the seed cache directory URL.
+     * return string The URL to the seed cache directory.
+     */
+    public function getSeedCacheUrl ($path = '') {
+        return esc_url(content_url(trailingslashit(basename($this->getSeedCacheDir()))) . $path);
     }
 
     public function process () {
@@ -54,10 +75,10 @@ class WP_BitTorrent {
         if (!isset($_GET[$this->prefix . 'seed'])) { return; }
         global $wp;
         $current_url = add_query_arg($wp->query_string, '', home_url($wp->request));
-        $this->seed_dir = $this->seed_cache_dir . '/web-seed-'
+        $this->seed = $this->seed_cache_dir . '/web-seed-'
             . hash('sha256', get_current_user_id() . $current_url);
-        if (is_readable($this->seed_dir) && $this->max_cache_age > time() - filemtime("$this->seed_dir/.")) {
-            $torrent = $this->makeTorrent($this->seed_dir);
+        if (!$this->isExpired($this->seed)) {
+            $torrent = $this->makeTorrent($this->seed);
             $torrent->send();
         } else {
             // We need a new cache file, so regenerate it. This means
@@ -145,15 +166,15 @@ class WP_BitTorrent {
             $this->debugLog(sprintf(esc_html__('Cleaning output buffer %s', 'wp-bittorrent'), $i));
             ob_end_clean();
         }
-        if (file_exists($this->seed_dir)) {
-            self::rmtree($this->seed_dir);
+        if (file_exists($this->seed)) {
+            self::rmtree($this->seed);
         }
         // TODO: Fix the name so it works for pages that are not single (like tag, archives, etc), too.
         // TODO: Am I right that there's a double-urlencode()'ing problem here?
         $this->torrent_name = strtr(get_the_title(), ' :/\\', '----'); // Lazy encoding
-        if (mkdir($this->seed_dir) && mkdir("{$this->seed_dir}/{$this->torrent_name}")) {
-            if (false !== ($s = file_put_contents("{$this->seed_dir}/{$this->torrent_name}/index.html", $this->buffer))) {
-                $torrent = $this->makeTorrent($this->seed_dir);
+        if (mkdir($this->seed) && mkdir("{$this->seed}/{$this->torrent_name}")) {
+            if (false !== ($s = file_put_contents("{$this->seed}/{$this->torrent_name}/index.html", $this->buffer))) {
+                $torrent = $this->makeTorrent($this->seed);
                 $torrent->send();
             }
         }
@@ -194,6 +215,27 @@ class WP_BitTorrent {
             $torrent
         ));
         return $torrent;
+    }
+
+    public function makeTorrentFromSeed ($seed) {
+        $file = trailingslashit($this->getSeedCacheDir()) . basename($seed) . '.torrent';
+        if ($this->isExpired($file)) {
+            $tr = $this->getTrackers();
+            $torrent = new Torrent($seed, $tr[0]);
+            $torrent->announce($tr);
+            $torrent->save($file);
+        }
+        $torrent = new Torrent($file);
+        return $torrent;
+    }
+
+    private function isExpired ($file) {
+        $file = (is_dir($file)) ? "$file/.": $file;
+        if (is_readable($file) && $this->max_cache_age > time() - filemtime($file)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public function registerSettings () {
@@ -355,3 +397,4 @@ esc_html__('BitTorrent my Blog is provided as free software, but sadly grocery s
 }
 
 $wp_bittorrent = new WP_BitTorrent();
+require_once 'template-functions.php';
