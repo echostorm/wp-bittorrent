@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: BitTorrent, torrent, file sharing, p2p
 Requires at least: 3.5
 Tested up to: 4.1
-Stable tag: 0.1.2
+Stable tag: 0.1.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -14,6 +14,7 @@ Publish your blog as a BitTorrent seed. Automatically make and share torrents fo
 
 Bring the power of BitTorrent to your blog in just a few clicks. BitTorrent My Blog automatically creates `.torrent` files for every part of your website, enabling your visitors to download and share copies of your content over the BitTorrent peer-to-peer file sharing network. Your web site itself serves as the web seed for each new torrent.
 
+= Turn any webpage into torrent =
 To turn your web page into a torrent download, simply add a `wp_bittorrent_seed` parameter to the URL. So, for instance, if your blog has a page at the address `http://example.com/about/`, then the torrent download for this page is:
 
     http://example.com/about/?wp_bittorrent_seed
@@ -24,6 +25,7 @@ If you do not use pretty permalinks, then you might have a similar page at an ad
 
 See the [plugin FAQ](https://wordpress.org/plugins/bittorrent/faq/) for more details on theming.
 
+= Torrent anything in your WordPress Media Library =
 You can also create torrents out of any files or folders you have on your website with simple shortcodes. (Matching template tags are also available for theme designers.) For example, you have a big file called `my-awesome-video.avi` that you'd like to distribute as a torrent. When you upload it to your site, it's available at `http://example.com/uploads/2015/01/my-awesome-video.avi` so you can make a torrent out of it and get a URL pointing to the torrent with a shortcode that looks like this:
 
     [wp_bittorrent_tag metainfo_file="http://example.com/uploads/2015/01/my-awesome-video.avi"]Download my video as a torrent![/wp_bittorrent_tag]
@@ -38,9 +40,12 @@ The matching template tag is `<?php do_action('wp_bittorrent_metainfo_file', $ur
 
 See the [Other Notes](https://wordpress.org/plugins/bittorrent/other_notes/) tab for additional shortcodes and template tag information.
 
+= Add a torrent feed to your podcast with zero configuration =
+BitTorrent My Blog automatically detects enclosures in RSS2 feeds and creates a new feed that replaces the original direct download enclosure with a torrent metainfo file enclosure. In other words, if you already have a podcast feed for episodes of your show, such as `http://example.com/category/episodes/feed/`, then simply installing this plugin will create another feed at `http://example.com/category/episodes/feed/torrent/`, which is the same as the regular feed but using torrent downloads instead of direct downloads. It couldn't get easier than that!
+
 = Why might you want to publish your site on BitTorrent? =
 
-* If you have a particularly popular post, replacing it with a web seed to share over BitTorrent can **dramatically reduce the load on your server.**
+* If you have a particularly popular post, replacing it with a web seed to share over BitTorrent can **dramatically reduce the load on your server.** This is also extremely helpful for podcasts or other large-size periodicals.
 * If you regularly host controversial content likely to be censored or threatened with a copyright takedown notice, publishing a web seed and encouraging your visitors to re-share it over BitTorrent can be **the difference between being silenced and being heard.**
 * Today's centralized architectures are a thing of the past. New Web browsers, like [Project Maelstrom](https://torrentfreak.com/bittorrent-inc-works-p2p-powered-browser-141210/), that use BitTorrent by default are already being experiemented with. **Stay on the cutting edge.**
 
@@ -77,6 +82,9 @@ Every page on your site has an associated torrent URL that is the same as the re
 
     <a href="<?php print add_query_arg('wp_bittorrent_seed', true, get_permalink());?>">seed this using BitTorrent</a>
 
+= Can I use this plugin to distribute my podcast or netcast over BitTorrent? =
+Yes. BitTorrent My Blog automatically detects enclosures in RSS2 feeds and creates a new feed that replaces the original direct download enclosure with a torrent metainfo file enclosure. In other words, if you already have a podcast feed for episodes of your show, such as `http://example.com/category/episodes/feed/`, then simply installing this plugin will create another feed at `http://example.com/category/episodes/feed/torrent/`, which is the same as the regular feed but using torrent downloads instead of direct downloads. It couldn't get easier than that!
+
 = The plugin says "mkdir() permission denied"? =
 Make sure your WordPress content directory (`wp-content/`) is read and writeable by your webserver. (This is the default on most systems.)
 
@@ -85,6 +93,10 @@ Make sure your WordPress content directory (`wp-content/`) is read and writeable
 1. The plugin's options screen lets you customize the way your blog is published on BitTorrent. You can leave the default tracker addresses, or set your own. To further improve performance, generated torrent seeds are cached, and you can configure how long the seeds are cached for before they are regenerated.
 
 == Change log ==
+
+= Version 0.1.3 =
+
+* Feature: Automatic torrent feed creation from WordPress RSS2 enclosures. This is especially useful for podcasters!
 
 = Version 0.1.2 =
 
