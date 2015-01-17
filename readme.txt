@@ -75,7 +75,7 @@ You can turn anything you host on your website into a torrent. Simply upload a f
 
 For example, if you uploaded `my-awesome-video.avi` to your website, and you would ordinarily link to it with a URL like `http://example.com/uploads/2015/01/my-awesome-video.avi`, then you can use the following shortcode to link to its torrent:
 
-    [wp_bittorrent_file metainfo_file="http://example.com/uploads/2015/01/my-awesome-video.avi"]
+    [wp_bittorrent_tag metainfo_file="http://example.com/uploads/2015/01/my-awesome-video.avi"]
 
 = How do I add torrent links to my pages? =
 Every page on your site has an associated torrent URL that is the same as the regular URL but with `webseed` or `?webseed` added to the end, depending on whether you use [WordPress's Pretty Permalinks](https://codex.wordpress.org/Using_Permalinks) feature or not, respectively. In your themes, you can programmatically output the torrent link to the current page like this:
