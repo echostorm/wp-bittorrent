@@ -157,7 +157,7 @@ class WP_BitTorrent {
      */
     private function hijackOutput ($buffer) {
         $this->buffer = $buffer;
-        // TODO: Fetch images and insert them as data URIs inline?
+        // TODO: Fetch CSS background images and insert them as data URIs inline?
         $options = get_option($this->prefix . 'settings');
         if (!empty($options['use_data_uri'])) {
             $this->buffer = preg_replace_callback(
@@ -221,9 +221,9 @@ class WP_BitTorrent {
         if (file_exists($this->seed)) {
             self::rmtree($this->seed);
         }
-        // TODO: Fix the name so it works for pages that are not single (like tag, archives, etc), too.
         // TODO: Am I right that there's a double-urlencode()'ing problem here?
-        $this->torrent_name = strtr(get_the_title(), ' :/\\', '----'); // Lazy encoding
+        preg_match('/<title>(.+?)<\/title>/', $this->buffer, $m);
+        $this->torrent_name = (empty($m[1])) ? get_the_title() : strtr($m[1], ' :/\\', '----'); // Lazy encoding
         if (mkdir($this->seed) && mkdir("{$this->seed}/{$this->torrent_name}")) {
             if (false !== ($s = file_put_contents("{$this->seed}/{$this->torrent_name}/index.html", $this->buffer))) {
                 $torrent = $this->makeTorrent($this->seed);
