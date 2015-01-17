@@ -3,7 +3,7 @@
  * Plugin Name: BitTorrent my Blog
  * Plugin URI: https://github.com/meitar/wp-bittorrent
  * Description: Publish your blog as a BitTorrent seed. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=WP-BitTorrent&amp;item_number=WP-BitTorrent&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of WP-BitTorrent">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.1.3
+ * Version: 0.1.4
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: wp-bittorrent

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: BitTorrent, torrent, file sharing, p2p
 Requires at least: 3.5
 Tested up to: 4.1
-Stable tag: 0.1.3
+Stable tag: 0.1.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -97,6 +97,7 @@ Make sure your WordPress content directory (`wp-content/`) is read and writeable
 = Version 0.1.4 =
 
 * Feature: Support pretty permalinks. Use `/webseed` at the end of pretty permalink URLs to download the requested page as a web seeded torrent.
+* Bugfix: The name of torrents for archive pages now correctly matches the web page's `<title>`.
 
 = Version 0.1.3 =
 
