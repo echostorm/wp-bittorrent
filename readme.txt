@@ -2,7 +2,7 @@
 Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=WP-BitTorrent&item_number=WP-BitTorrent&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: BitTorrent, torrent, file sharing, p2p
-Requires at least: 3.5
+Requires at least: 3.9.1
 Tested up to: 4.1
 Stable tag: 0.1.4
 License: GPLv3
@@ -96,7 +96,7 @@ Make sure your WordPress content directory (`wp-content/`) is read and writeable
 
 = Version 0.1.4 =
 
-* Feature: Support pretty permalinks. Use `/webseed` at the end of pretty permalink URLs to download the requested page as a web seeded torrent.
+* Feature: Support pretty permalinks. Use `/webseed` at the end of pretty permalink URLs to download the requested page as a web seeded torrent. Plugin now requires WordPress 3.9.1 or later.
 * Bugfix: The name of torrents for archive pages now correctly matches the web page's `<title>`.
 
 = Version 0.1.3 =
