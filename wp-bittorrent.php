@@ -359,6 +359,7 @@ esc_html__('BitTorrent my Blog is provided as free software, but sadly grocery s
     }
 
     public function activate () {
+        $this->registerRewrites();
         flush_rewrite_rules();
     }
 
