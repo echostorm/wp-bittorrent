@@ -14,14 +14,14 @@ Publish your blog as a BitTorrent seed. Automatically make and share torrents fo
 
 Bring the power of BitTorrent to your blog in just a few clicks. BitTorrent My Blog automatically creates `.torrent` files for every part of your website, enabling your visitors to download and share copies of your content over the BitTorrent peer-to-peer file sharing network. Your web site itself serves as the web seed for each new torrent.
 
-= Turn any webpage into torrent =
-To turn your web page into a torrent download, simply add a `wp_bittorrent_seed` parameter to the URL. So, for instance, if your blog has a page at the address `http://example.com/about/`, then the torrent download for this page is:
+= Turn any webpage into a torrent =
+To turn your web page into a torrent, simply add a `webseed` parameter to the URL. So, for instance, if your blog has a page at the address `http://example.com/about/`, then the torrent download for this page is:
 
-    http://example.com/about/?wp_bittorrent_seed
+    http://example.com/about/webseed
 
 If you do not use pretty permalinks, then you might have a similar page at an address like `http://example.com/?p=123`, in which case your torrent download for that page is located at:
 
-    http://example.com/?p=123&wp_bittorrent_seed
+    http://example.com/?p=123&webseed
 
 See the [plugin FAQ](https://wordpress.org/plugins/bittorrent/faq/) for more details on theming.
 
@@ -55,14 +55,14 @@ You don't need to know anything about BitTorrent to use this plugin. Use the zer
 
 Read [this gentle introduction to BitTorrent](http://maymay.net/blog/2015/01/03/howto-download-movies-games-books-and-other-digital-media-freely-and-anonymously-using-bittorrent-with-public-proxies/) that clarifies BitTorrent's complexity in very simple language.
 
-Want to try *before* you install? [Download the previous link as a torrent](http://maymay.net/blog/2015/01/03/howto-download-movies-games-books-and-other-digital-media-freely-and-anonymously-using-bittorrent-with-public-proxies/?wp_bittorrent_seed)!
+Want to try *before* you install? [Download the previous link as a torrent](http://maymay.net/blog/2015/01/03/howto-download-movies-games-books-and-other-digital-media-freely-and-anonymously-using-bittorrent-with-public-proxies/webseed)!
 
 == Installation ==
 
 1. Upload the unzipped `wp-bittorrent` directory to your `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 1. Optionally, configure the plugin's defaults in its settings screen. See [Screenshots](https://wordpress.org/plugins/bittorrent/screenshots/) for some examples.
-1. Add links to your site with the special `wp_bittorrent_seed` query string to generate a torrent.
+1. Add links to your site with the special `webseed` query string to generate a torrent.
 
 = System requirements =
 
@@ -78,9 +78,9 @@ For example, if you uploaded `my-awesome-video.avi` to your website, and you wou
     [wp_bittorrent_file metainfo_file="http://example.com/uploads/2015/01/my-awesome-video.avi"]
 
 = How do I add torrent links to my pages? =
-Every page on your site has an associated torrent URL that is the same as the regular URL but with `?wp_bittorrent_seed` or `&wp_bittorrent_seed` added to the end, depending on whether you use [WordPress's Pretty Permalinks](https://codex.wordpress.org/Using_Permalinks) feature or not, respectively. In your themes, you can programmatically output the torrent link to the current page like this:
+Every page on your site has an associated torrent URL that is the same as the regular URL but with `webseed` or `?webseed` added to the end, depending on whether you use [WordPress's Pretty Permalinks](https://codex.wordpress.org/Using_Permalinks) feature or not, respectively. In your themes, you can programmatically output the torrent link to the current page like this:
 
-    <a href="<?php print add_query_arg('wp_bittorrent_seed', true, get_permalink());?>">seed this using BitTorrent</a>
+    <a href="<?php print add_query_arg('webseed', true, get_permalink());?>">seed this using BitTorrent</a>
 
 = Can I use this plugin to distribute my podcast or netcast over BitTorrent? =
 Yes. BitTorrent My Blog automatically detects enclosures in RSS2 feeds and creates a new feed that replaces the original direct download enclosure with a torrent metainfo file enclosure. In other words, if you already have a podcast feed for episodes of your show, such as `http://example.com/category/episodes/feed/`, then simply installing this plugin will create another feed at `http://example.com/category/episodes/feed/torrent/`, which is the same as the regular feed but using torrent downloads instead of direct downloads. It couldn't get easier than that!
@@ -93,6 +93,10 @@ Make sure your WordPress content directory (`wp-content/`) is read and writeable
 1. The plugin's options screen lets you customize the way your blog is published on BitTorrent. You can leave the default tracker addresses, or set your own. To further improve performance, generated torrent seeds are cached, and you can configure how long the seeds are cached for before they are regenerated.
 
 == Change log ==
+
+= Version 0.1.4 =
+
+* Feature: Support pretty permalinks. Use `/webseed` at the end of pretty permalink URLs to download the requested page as a web seeded torrent.
 
 = Version 0.1.3 =
 

@@ -10,6 +10,8 @@
  * Domain Path: /languages
  */
 
+require_once dirname(__FILE__) . '/lib/Torrent-RW/Torrent.php';
+
 class WP_BitTorrent {
     private $prefix = 'wp_bittorrent_';
     private $default_settings = array(
@@ -25,7 +27,8 @@ class WP_BitTorrent {
     private $torrent_name;   //< The name for the generated torrent.
 
     public function __construct () {
-        require_once dirname(__FILE__) . '/lib/Torrent-RW/Torrent.php';
+        register_activation_hook(__FILE__, array($this, 'activate'));
+        register_deactivation_hook(__FILE__, array($this, 'deactivate'));
 
         $options = get_option($this->prefix . 'settings');
         $this->max_cache_age = (!isset($options['max_cache_age'])) ? $this->default_settings['max_cache_age'] : $options['max_cache_age'];
@@ -41,7 +44,7 @@ class WP_BitTorrent {
         }
 
         add_action('plugins_loaded', array($this, 'registerL10n'));
-        add_action('init', array($this, 'registerFeed'));
+        add_action('init', array($this, 'registerRewrites'));
         add_action('admin_init', array($this, 'registerSettings'));
         add_action('admin_menu', array($this, 'registerAdminMenu'));
         add_action('template_redirect', array($this, 'process'));
@@ -60,7 +63,11 @@ class WP_BitTorrent {
         load_plugin_textdomain('wp-bittorrent', false, dirname(plugin_basename(__FILE__)) . '/languages/');
     }
 
-    public function registerFeed () {
+    public function registerRewrites () {
+        // Recognize URLs like '*/webseed\/?'
+        add_rewrite_endpoint($this->prefix . 'seed', EP_ALL); // Pre 0.1.4 compatibility
+        add_rewrite_endpoint('webseed', EP_ALL);
+        // Recognize 'torrent' RSS feeds
         add_feed('torrent', array($this, 'dispatchTorrentFeed'));
     }
 
@@ -115,10 +122,10 @@ class WP_BitTorrent {
     }
 
     public function process () {
-        // TODO: Make this work with pretty permalinks?
-        //       Perhaps see https://codex.wordpress.org/Custom_Queries
-        if (!isset($_GET[$this->prefix . 'seed'])) { return; }
-        global $wp;
+        global $wp_query, $wp;
+        if (!isset($wp_query->query_vars['webseed']) && !isset($wp_query->query_vars[$this->prefix . 'seed'])) {
+            return;
+        }
         $current_url = add_query_arg($wp->query_string, '', home_url($wp->request));
         $this->seed = $this->seed_cache_dir . '/web-seed-'
             . hash('sha256', get_current_user_id() . $current_url);
@@ -349,6 +356,14 @@ esc_html__('BitTorrent my Blog is provided as free software, but sadly grocery s
         } else {
             load_template(dirname(__FILE__) . '/templates/rss-torrent.php');
         }
+    }
+
+    public function activate () {
+        flush_rewrite_rules();
+    }
+
+    public function deactivate () {
+        flush_rewrite_rules();
     }
 
     /**
