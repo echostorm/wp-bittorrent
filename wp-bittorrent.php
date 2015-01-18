@@ -64,9 +64,9 @@ class WP_BitTorrent {
     }
 
     public function registerRewrites () {
-        // Recognize URLs like '*/webseed\/?'
-        add_rewrite_endpoint($this->prefix . 'seed', EP_ALL); // Pre 0.1.4 compatibility
+        // Recognize URLs like '.*\/webseed\/?'
         add_rewrite_endpoint('webseed', EP_ALL);
+        add_rewrite_endpoint($this->prefix . 'seed', EP_ALL); // Pre 0.1.4 compatibility
         // Recognize 'torrent' RSS feeds
         add_feed('torrent', array($this, 'dispatchTorrentFeed'));
     }
