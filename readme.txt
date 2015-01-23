@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: BitTorrent, torrent, file sharing, p2p
 Requires at least: 3.9.1
 Tested up to: 4.1
-Stable tag: 0.1.4
+Stable tag: 0.1.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,10 +12,10 @@ Publish your blog as a BitTorrent seed. Automatically make and share torrents fo
 
 == Description ==
 
-Bring the power of BitTorrent to your blog in just a few clicks. BitTorrent My Blog automatically creates `.torrent` files for every part of your website, enabling your visitors to download and share copies of your content over the BitTorrent peer-to-peer file sharing network. Your web site itself serves as the web seed for each new torrent.
+Bring the power of BitTorrent to your blog in just a few clicks. BitTorrent My Blog automatically creates `.torrent` files for every part of your website. It automatically serves these torrents to BitTorrent-capable browsers. Even without a BitTorrent-capable Web browser, your visitors can download and share copies of your content over the BitTorrent peer-to-peer file sharing network. Your web site itself serves as the web seed for each new torrent.
 
 = Turn any webpage into a torrent =
-To turn your web page into a torrent, simply add a `webseed` parameter to the URL. So, for instance, if your blog has a page at the address `http://example.com/about/`, then the torrent download for this page is:
+With the plugin installed, any web page on your site can be turned into a torrent by adding a `webseed` parameter to the URL. So, for instance, if your blog has a page at the address `http://example.com/about/`, then the torrent download for this page is:
 
     http://example.com/about/webseed
 
@@ -24,6 +24,8 @@ If you do not use pretty permalinks, then you might have a similar page at an ad
     http://example.com/?p=123&webseed
 
 See the [plugin FAQ](https://wordpress.org/plugins/bittorrent/faq/) for more details on theming.
+
+Visitors using a natively BitTorrent-capable browser (like Maelstrom), will automatically receive `.torrent` versions of your pages without any configuration needed.
 
 = Torrent anything in your WordPress Media Library =
 You can also create torrents out of any files or folders you have on your website with simple shortcodes. (Matching template tags are also available for theme designers.) For example, you have a big file called `my-awesome-video.avi` that you'd like to distribute as a torrent. When you upload it to your site, it's available at `http://example.com/uploads/2015/01/my-awesome-video.avi` so you can make a torrent out of it and get a URL pointing to the torrent with a shortcode that looks like this:
@@ -93,6 +95,10 @@ Make sure your WordPress content directory (`wp-content/`) is read and writeable
 1. The plugin's options screen lets you customize the way your blog is published on BitTorrent. You can leave the default tracker addresses, or set your own. To further improve performance, generated torrent seeds are cached, and you can configure how long the seeds are cached for before they are regenerated.
 
 == Change log ==
+
+= Version 0.1.5 =
+
+* Feature: BitTorrent-capable browsers (like Maelstrom) are automatically detected and served `.torrent` files, even if they don't explicitly add the `webseed` parameter to their requests. You can disable this feature from the plugin's options screen.
 
 = Version 0.1.4 =
 
