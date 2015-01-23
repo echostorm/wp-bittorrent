@@ -47,7 +47,7 @@ class WP_BitTorrent {
         add_action('init', array($this, 'registerRewrites'));
         add_action('admin_init', array($this, 'registerSettings'));
         add_action('admin_menu', array($this, 'registerAdminMenu'));
-        add_action('template_redirect', array($this, 'process'));
+        add_action('template_redirect', array($this, 'templateRedirect'));
 
         // Template tag actions.
         add_action($this->prefix . 'metainfo_file', $this->prefix . 'metainfo_file');
@@ -121,11 +121,43 @@ class WP_BitTorrent {
         return $html;
     }
 
-    public function process () {
+    private function isBitTorrentUserAgent ($str) {
+        // TODO: Share BitTorrent client UA strings with Browscap.org?
+        //$x = get_browser();
+        // For now, just alternate against a few known agents.
+        $uas = array(
+            'Torrent',     // Project Maelstrom
+            'BTWebClient', // uTorrent
+            'Deluge'       // Deluge
+        );
+        return preg_match('/(?:' . implode('|', $uas) . ')/i', $str);
+    }
+
+    public function templateRedirect () {
         global $wp_query, $wp;
-        if (!isset($wp_query->query_vars['webseed']) && !isset($wp_query->query_vars[$this->prefix . 'seed'])) {
-            return;
+        $options = get_option($this->prefix . 'settings');
+        // Ensure this is a known torrent client, or that we've been explicitly asked for a webseed
+        if (isset($options['no_ua_detect'])) {
+            $this->debugLog('Skipping User-Agent detection.');
+            if (!isset($wp_query->query_vars['webseed']) && !isset($wp_query->query_vars[$this->prefix . 'seed'])) {
+                return;
+            }
+        } else {
+            $this->debugLog(sprintf('Request by User-Agent: %s', $_SERVER['HTTP_USER_AGENT']));
+            if (!$this->isBitTorrentUserAgent($_SERVER['HTTP_USER_AGENT'])) {
+                if (!isset($wp_query->query_vars['webseed']) && !isset($wp_query->query_vars[$this->prefix . 'seed'])) {
+                    return;
+                }
+            }
         }
+
+        $this->debugLog(sprintf(
+            'Generating webseed for URL %s requested by User-Agent: %s',
+            $_SERVER['REQUEST_URI'],
+            $_SERVER['HTTP_USER_AGENT']
+        ));
+        // The current request is either one for a webseed explicitly, or it's a request being
+        // made by a User Agent who reports to be a BitTorrent client, so return a .torrent file.
         $current_url = add_query_arg($wp->query_string, '', home_url($wp->request));
         $this->seed = $this->seed_cache_dir . '/web-seed-'
             . hash('sha256', get_current_user_id() . $current_url);
@@ -388,6 +420,7 @@ esc_html__('BitTorrent my Blog is provided as free software, but sadly grocery s
                     break;
                 case 'max_cache_age':
                 case 'use_data_uri':
+                case 'no_ua_detect':
                 case 'debug':
                     $safe_input[$k] = intval($v);
                     break;
@@ -471,6 +504,22 @@ esc_html__('BitTorrent my Blog is provided as free software, but sadly grocery s
                 <p class="description">
                     <?php esc_html_e('Include a distribution note to be included along with your multi-file torrents. This is a good place to say thanks to folks who download your content, and to remind them to please seed for as long as they can.', 'wp-bittorrent');?>
                 </p>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <label for="<?php esc_attr_e($this->prefix);?>no_ua_detect">
+                    <?php esc_html_e('Disable User-Agent detection?', 'wp-bittorrent');?>
+                </label>
+            </th>
+            <td>
+                <input type="checkbox" id="<?php esc_attr_e($this->prefix);?>no_ua_detect" name="<?php esc_attr_e($this->prefix);?>settings[no_ua_detect]" value="1" <?php if (isset($options['no_ua_detect'])) { checked($options['no_ua_detect'], 1); } ?> />
+                <label for="<?php esc_attr_e($this->prefix);?>no_ua_detect"><span class="description"><?php
+        print sprintf(
+            esc_html__('Turning off User-Agent detection will mean that visitors must request BitTorrent versions of your pages explicitly. If you disable User-Agent detection, remember to %1$sprovide a link to the webseed version%2$s somewhere in your template. (This setting will not affect RSS feeds.)', 'wp-bittorrent'),
+            '<a href="https://wordpress.org/plugins/bittorrent/faq/">', '</a>'
+        );
+                ?></span></label>
             </td>
         </tr>
         <tr>
